@@ -210,7 +210,7 @@ int CGame::Run()
 				}
 			}
 
-			if(event.type == SDL_KEYDOWN)
+            if(event.type == SDL_KEYUP)
 			{
 				if(event.key.keysym.mod == KMOD_LCTRL)
 				{
@@ -224,7 +224,7 @@ int CGame::Run()
 					// Turn AI on or off.
 					else if(event.key.keysym.sym == SDLK_a)
 					{
-						if(m_bAI)
+                        if(m_bAI == true)
 							m_bAI = false;
 						else
 							m_bAI = true;

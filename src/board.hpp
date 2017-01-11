@@ -58,6 +58,7 @@ public:
 	std::vector<Marks> marks;
 
 private:
+        bool AIPotentialWin();
 	bool AIBlock();
 	bool AIRandom();
 

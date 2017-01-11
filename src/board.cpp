@@ -267,10 +267,152 @@ int CBoard::Update(bool player, int x, int y)
 //=============================================================================
 void CBoard::SimulateAI()
 {
+    if(AIPotentialWin())
+        return;
+
 	if(AIBlock())
 		return;
 
 	AIRandom();
+}
+
+bool CBoard::AIPotentialWin()
+{
+    // Vertical lines
+    // First Row
+    if(marks[0].texture == NULL && marks[3].texture == m_pPlayer2 && marks[6].texture == m_pPlayer2)
+    {
+        marks[0].texture = m_pPlayer2;
+        return true;
+    }
+    else if(marks[0].texture == m_pPlayer2 && marks[3].texture == NULL && marks[6].texture == m_pPlayer2)
+    {
+        marks[3].texture = m_pPlayer2;
+        return true;
+    }
+    else if(marks[0].texture == m_pPlayer2 && marks[3].texture == m_pPlayer2 && marks[6].texture == NULL)
+    {
+        marks[6].texture = m_pPlayer2;
+        return true;
+    }
+    // Second Row
+    else if(marks[1].texture == NULL && marks[4].texture == m_pPlayer2 && marks[7].texture == m_pPlayer2)
+    {
+        marks[1].texture = m_pPlayer2;
+        return true;
+    }
+    else if(marks[1].texture == m_pPlayer2 && marks[4].texture == NULL && marks[7].texture == m_pPlayer2)
+    {
+        marks[4].texture = m_pPlayer2;
+        return true;
+    }
+    else if(marks[1].texture == m_pPlayer2 && marks[4].texture == m_pPlayer2 && marks[7].texture == NULL)
+    {
+        marks[7].texture = m_pPlayer2;
+        return true;
+    }
+    //Third Row
+    else if(marks[2].texture == NULL && marks[5].texture == m_pPlayer2 && marks[8].texture == m_pPlayer2)
+    {
+        marks[2].texture = m_pPlayer2;
+        return true;
+    }
+    else if(marks[2].texture == m_pPlayer2 && marks[5].texture == NULL && marks[8].texture == m_pPlayer2)
+    {
+        marks[5].texture = m_pPlayer2;
+        return true;
+    }
+    else if(marks[2].texture == m_pPlayer2 && marks[5].texture == m_pPlayer2 && marks[8].texture == NULL)
+    {
+        marks[8].texture = m_pPlayer2;
+        return true;
+    }
+
+    // Horizontal lines
+    // First Column
+    else if(marks[0].texture == NULL && marks[1].texture == m_pPlayer2 && marks[2].texture == m_pPlayer2)
+    {
+        marks[0].texture = m_pPlayer2;
+        return true;
+    }
+    else if(marks[0].texture == m_pPlayer2 && marks[1].texture == NULL && marks[2].texture == m_pPlayer2)
+    {
+        marks[1].texture = m_pPlayer2;
+        return true;
+    }
+    else if(marks[0].texture == m_pPlayer2 && marks[1].texture == m_pPlayer2 && marks[2].texture == NULL)
+    {
+        marks[2].texture = m_pPlayer2;
+        return true;
+    }
+    // Second Column
+    else if(marks[3].texture == NULL && marks[4].texture == m_pPlayer2 && marks[5].texture == m_pPlayer2)
+    {
+        marks[3].texture = m_pPlayer2;
+        return true;
+    }
+    else if(marks[3].texture == m_pPlayer2 && marks[4].texture == NULL && marks[5].texture == m_pPlayer2)
+    {
+        marks[4].texture = m_pPlayer2;
+        return true;
+    }
+    else if(marks[3].texture == m_pPlayer2 && marks[4].texture == m_pPlayer2 && marks[5].texture == NULL)
+    {
+        marks[5].texture = m_pPlayer2;
+        return true;
+    }
+    // Third Column
+    else if(marks[6].texture == NULL && marks[7].texture == m_pPlayer2 && marks[8].texture == m_pPlayer2)
+    {
+        marks[6].texture = m_pPlayer2;
+        return true;
+    }
+    else if(marks[6].texture == m_pPlayer2 && marks[7].texture == NULL && marks[8].texture == m_pPlayer2)
+    {
+        marks[7].texture = m_pPlayer2;
+        return true;
+    }
+    else if(marks[6].texture == m_pPlayer2 && marks[7].texture == m_pPlayer2 && marks[8].texture == NULL)
+    {
+        marks[8].texture = m_pPlayer2;
+        return true;
+    }
+
+    // Diagonal lines
+    // Left to Right
+    else if(marks[0].texture == NULL && marks[4].texture == m_pPlayer2 && marks[8].texture == m_pPlayer2)
+    {
+        marks[0].texture = m_pPlayer2;
+        return true;
+    }
+    else if(marks[0].texture == m_pPlayer2 && marks[4].texture == NULL && marks[8].texture == m_pPlayer2)
+    {
+        marks[4].texture = m_pPlayer2;
+        return true;
+    }
+    else if(marks[0].texture == m_pPlayer2 && marks[4].texture == m_pPlayer2 && marks[8].texture == NULL)
+    {
+        marks[8].texture = m_pPlayer2;
+        return true;
+    }
+    // Right to Left
+    else if(marks[2].texture == NULL && marks[4].texture == m_pPlayer2 && marks[6].texture == m_pPlayer2)
+    {
+        marks[2].texture = m_pPlayer2;
+        return true;
+    }
+    else if(marks[2].texture == m_pPlayer2 && marks[4].texture == NULL && marks[6].texture == m_pPlayer2)
+    {
+        marks[4].texture = m_pPlayer2;
+        return true;
+    }
+    else if(marks[2].texture == m_pPlayer2 && marks[4].texture == m_pPlayer2 && marks[6].texture == NULL)
+    {
+        marks[6].texture = m_pPlayer2;
+        return true;
+    }
+
+    return false;
 }
 
 //=============================================================================
