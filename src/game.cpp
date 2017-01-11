@@ -27,17 +27,17 @@ CGame::CGame()
     m_pMessageAIWon         = NULL;
     m_pMessageGameOver      = NULL;
 
-	m_WindowWidth   = 325;
-	m_WindowHeight  = 400;
-	m_StartTime     = 0;
-	m_CurrentTime   = 0;
-	m_LastTime      = 0;
+    m_WindowWidth   = 325;
+    m_WindowHeight  = 400;
+    m_StartTime     = 0;
+    m_CurrentTime   = 0;
+    m_LastTime      = 0;
     m_bQuit         = false;
     m_bPlayerTurn   = true;
-	m_bAI           = false;
-    m_eGameState     = GAMESTATE_STARTUP;
+    m_bAI           = false;
+    m_eGameState    = GAMESTATE_STARTUP;
 
-    m_TextColour = {0, 0, 0, 0};
+    m_TextColour      = {0, 0, 0, 0};
     m_MessageLocation = {15, 25, 0, 0};
 }
 
@@ -96,15 +96,15 @@ int CGame::Initialise()
 
 	if(returnCode != 0)
 	{
-		fprintf(stderr, "ERROR: Unable to initialise: %s\n", SDL_GetError());
+        SDL_ShowSimpleMessageBox( SDL_MESSAGEBOX_ERROR, "Failed to initialise", SDL_GetError(), NULL);
 		return returnCode;
 	}
 
     m_pWindow = SDL_CreateWindow("Tic Tac Toe", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, m_WindowWidth, m_WindowHeight, SDL_WINDOW_SHOWN);
 
 	if(m_pWindow == NULL)
-	{
-		fprintf(stderr, "ERROR: Unable to create window: %s\n", SDL_GetError());
+    {
+        SDL_ShowSimpleMessageBox( SDL_MESSAGEBOX_ERROR, "Failed to create a window", SDL_GetError(), NULL);
 		return -1;
 	}
 
@@ -112,7 +112,7 @@ int CGame::Initialise()
 
     if(m_pRenderer == NULL)
     {
-        fprintf(stderr, "ERROR: Unable to create renderer: %s\n", SDL_GetError());
+        SDL_ShowSimpleMessageBox( SDL_MESSAGEBOX_ERROR, "Failed to create a renderer", SDL_GetError(), NULL);
         return -1;
     }
 
@@ -121,8 +121,8 @@ int CGame::Initialise()
 	m_pBoard = new CBoard();
 
 	if(TTF_Init() != 0)
-	{
-		fprintf(stderr, "Error: Unable to initialise fonts: %s\n", TTF_GetError());
+    {
+        SDL_ShowSimpleMessageBox( SDL_MESSAGEBOX_ERROR, "Failed to initialise", TTF_GetError(), NULL);
 		return -1;
 	}
 
@@ -130,14 +130,34 @@ int CGame::Initialise()
 
     if(m_pFont == NULL)
     {
-        fprintf(stderr, "Error: Unable to initialise fonts: %s\n", TTF_GetError());
+        SDL_ShowSimpleMessageBox( SDL_MESSAGEBOX_ERROR, "Failed to open font", TTF_GetError(), NULL);
         return -1;
     }
 
 	// Load assets into memory.
-    m_pBoard->SetBackground(m_pRenderer, "../data/assets/background.bmp");
-    m_pBoard->SetPlayer1(m_pRenderer, "../data/assets/x.bmp");
-    m_pBoard->SetPlayer2(m_pRenderer, "../data/assets/o.bmp");
+    int result = m_pBoard->SetBackground(m_pRenderer, "../data/assets/background.bmp");
+
+    if(result == -1)
+    {
+        SDL_ShowSimpleMessageBox( SDL_MESSAGEBOX_ERROR, "Failed to load background image", SDL_GetError(), NULL);
+        return -1;
+    }
+
+    result = m_pBoard->SetPlayer1(m_pRenderer, "../data/assets/x.bmp");
+
+    if(result == -1)
+    {
+        SDL_ShowSimpleMessageBox( SDL_MESSAGEBOX_ERROR, "Failed to load player 1 image", SDL_GetError(), NULL);
+        return -1;
+    }
+
+    result = m_pBoard->SetPlayer2(m_pRenderer, "../data/assets/o.bmp");
+
+    if(result == -1)
+    {
+        SDL_ShowSimpleMessageBox( SDL_MESSAGEBOX_ERROR, "Failed to load player 2 image", SDL_GetError(), NULL);
+        return -1;
+    }
 
     SDL_Surface* temp = TTF_RenderText_Blended(m_pFont, "Press Ctrl+N to start a new game.", m_TextColour);
     m_pMessageStartup = SDL_CreateTextureFromSurface(m_pRenderer, temp);

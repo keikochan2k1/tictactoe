@@ -156,10 +156,7 @@ int CBoard::SetBackground(SDL_Renderer* renderer, std::string path)
 	SDL_Surface* temp = SDL_LoadBMP(path.data());
 
     if(temp == NULL)
-    {
-        fprintf(stderr, "ERROR: SDL_LoadBMP Failed: %s\n", SDL_GetError());
         return -1;
-    }
 
     m_pBackground = SDL_CreateTextureFromSurface(renderer, temp);
 
@@ -185,10 +182,7 @@ int CBoard::SetPlayer1(SDL_Renderer* renderer, std::string path)
 	SDL_Surface* temp = SDL_LoadBMP(path.data());
 
     if(temp == NULL)
-    {
-        fprintf(stderr, "ERROR: SDL_LoadBMP Failed: %s\n", SDL_GetError());
         return -1;
-    }
 
 	Uint32 color = SDL_MapRGB(temp->format, 246, 246, 246);
 	SDL_SetColorKey(temp, SDL_TRUE, color);
@@ -207,10 +201,7 @@ int CBoard::SetPlayer2(SDL_Renderer* renderer, std::string path)
 	SDL_Surface* temp = SDL_LoadBMP(path.data());
 
     if(temp == NULL)
-    {
-        fprintf(stderr, "ERROR: SDL_LoadBMP Failed: %s\n", SDL_GetError());
         return -1;
-    }
 
 	Uint32 color = SDL_MapRGB(temp->format, 246, 246, 246);
 	SDL_SetColorKey(temp, SDL_TRUE, color);

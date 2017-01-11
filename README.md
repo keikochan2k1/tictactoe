@@ -8,6 +8,6 @@ Tasks that I've decided to do now, before letting it rest:
 - [x] Fix the broken AI (DONE)
 - [x] Check for potential memory leaks (DONE)
 - [x] Add a statement that checks if the board is full (DONE)
-- [ ] Add some sensible error handling (IN PROGRESS)
+- [x] Add some sensible error handling (DONE)
 - [ ] Update README with how to compile and play.
 	
