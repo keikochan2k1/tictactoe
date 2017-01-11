@@ -25,16 +25,17 @@ CGame::CGame()
     m_pMessagePlayerOneWon  = NULL;
     m_pMessagePlayerTwoWon  = NULL;
     m_pMessageAIWon         = NULL;
+    m_pMessageGameOver      = NULL;
 
 	m_WindowWidth   = 325;
 	m_WindowHeight  = 400;
 	m_StartTime     = 0;
 	m_CurrentTime   = 0;
 	m_LastTime      = 0;
-	m_bQuit         = false;
-	m_bPlayerTurn   = true;
+    m_bQuit         = false;
+    m_bPlayerTurn   = true;
 	m_bAI           = false;
-	m_GameState     = GAMESTATE_STARTUP;
+    m_eGameState     = GAMESTATE_STARTUP;
 
     m_TextColour = {0, 0, 0, 0};
     m_MessageLocation = {15, 25, 0, 0};
@@ -63,6 +64,9 @@ CGame::~CGame()
 
     if(m_pMessageAIWon != NULL)
         SDL_DestroyTexture(m_pMessageAIWon);
+
+    if(m_pMessageGameOver != NULL)
+        SDL_DestroyTexture(m_pMessageGameOver);
 
     if(m_pFont != NULL)
         TTF_CloseFont(m_pFont);
@@ -153,6 +157,9 @@ int CGame::Initialise()
     temp = TTF_RenderText_Blended(m_pFont, "AI Won The Game!", m_TextColour);
     m_pMessageAIWon = SDL_CreateTextureFromSurface(m_pRenderer, temp);
 
+    temp = TTF_RenderText_Blended(m_pFont, "Game Over!", m_TextColour);
+    m_pMessageGameOver = SDL_CreateTextureFromSurface(m_pRenderer, temp);
+
 	SDL_FreeSurface(temp);
 
 	return 0;
@@ -174,7 +181,7 @@ int CGame::Run()
 		m_CurrentTime = SDL_GetTicks();
 
 		SDL_Event event;
-		if(SDL_PollEvent(&event))
+        if(SDL_PollEvent(&event))
 		{
 			if(event.type == SDL_QUIT)
 				m_bQuit = true;
@@ -183,7 +190,7 @@ int CGame::Run()
 			{
 				if(event.button.button == SDL_BUTTON_LEFT)
 				{
-					if(m_GameState == GAMESTATE_INPROGRESS)
+                    if(m_eGameState == GAMESTATE_INPROGRESS)
 					{
 						if((m_bPlayerTurn == true && m_bAI == true) || (m_bPlayerTurn == false && m_bAI == false) || (m_bPlayerTurn == true && m_bAI == false))
 						{
@@ -195,25 +202,18 @@ int CGame::Run()
 									m_bPlayerTurn = true;
 
 								if(m_pBoard->GameWon(true) == GAMESTATE_PLAYERWON)
-									m_GameState = GAMESTATE_PLAYERWON;
+                                    m_eGameState = GAMESTATE_PLAYERWON;
 								else if(m_pBoard->GameWon(false) == GAMESTATE_AIWON)
-									m_GameState = GAMESTATE_AIWON;
+                                    m_eGameState = GAMESTATE_AIWON;
+
+                                if(m_eGameState != GAMESTATE_PLAYERWON || m_eGameState != GAMESTATE_AIWON)
+                                {
+                                    if(m_pBoard->GameOver() == GAMESTATE_GAMEOVER)
+                                        m_eGameState = GAMESTATE_GAMEOVER;
+                                }
 							}
 						}
 					}
-				}
-			}
-
-			if(m_GameState == GAMESTATE_INPROGRESS)
-			{
-				if(m_bPlayerTurn == false && m_bAI == true)
-				{
-					m_pBoard->SimulateAI();
-
-					m_bPlayerTurn = true;
-
-					if(m_pBoard->GameWon(false) == GAMESTATE_AIWON)
-						m_GameState = GAMESTATE_AIWON;
 				}
 			}
 
@@ -226,7 +226,7 @@ int CGame::Run()
 					{
 						m_pBoard->NewBoard();
 						m_bPlayerTurn = true;
-						m_GameState = GAMESTATE_INPROGRESS;
+                        m_eGameState = GAMESTATE_INPROGRESS;
 					}
 					// Turn AI on or off.
 					else if(event.key.keysym.sym == SDLK_a)
@@ -241,7 +241,25 @@ int CGame::Run()
 						m_bQuit = true;
 				}
 			}
-		}
+        } // End SDL_PollEvent
+
+        if(m_eGameState == GAMESTATE_INPROGRESS)
+        {
+            if(m_bPlayerTurn == false && m_bAI == true)
+            {
+                m_pBoard->SimulateAI();
+                m_bPlayerTurn = true;
+
+                if(m_pBoard->GameWon(false) == GAMESTATE_AIWON)
+                    m_eGameState = GAMESTATE_AIWON;
+
+                if(m_eGameState != GAMESTATE_AIWON)
+                {
+                    if(m_pBoard->GameOver() == GAMESTATE_GAMEOVER)
+                        m_eGameState = GAMESTATE_GAMEOVER;
+                }
+            }
+        }
 
 		// Only update every 300 milliseconds.
 		if(m_LastTime - m_CurrentTime > 0.3)
@@ -252,28 +270,28 @@ int CGame::Run()
             for(unsigned int i = 0; i < m_pBoard->marks.size(); i++)
                 SDL_RenderCopy(m_pRenderer, m_pBoard->marks[i].texture, NULL, &m_pBoard->marks[i].location);
 
-            if(m_GameState == GAMESTATE_STARTUP)
+            if(m_eGameState == GAMESTATE_STARTUP)
 			{
                 SDL_QueryTexture(m_pMessageStartup, NULL, NULL, &m_MessageLocation.w, &m_MessageLocation.h);
                 m_MessageLocation.x = (m_WindowWidth - m_MessageLocation.w) / 2;
                 m_MessageLocation.y = 25;
                 SDL_RenderCopy(m_pRenderer, m_pMessageStartup, NULL, &m_MessageLocation);
 			}
-            else if(m_GameState == GAMESTATE_INPROGRESS && m_bPlayerTurn == true)
+            else if(m_eGameState == GAMESTATE_INPROGRESS && m_bPlayerTurn == true)
 			{
                 SDL_QueryTexture(m_pMessagePlayerOneTurn, NULL, NULL, &m_MessageLocation.w, &m_MessageLocation.h);
                 m_MessageLocation.x = (m_WindowWidth - m_MessageLocation.w) / 2;
                 m_MessageLocation.y = 25;
                 SDL_RenderCopy(m_pRenderer, m_pMessagePlayerOneTurn, NULL, &m_MessageLocation);
 			}
-            else if(m_GameState == GAMESTATE_INPROGRESS && m_bPlayerTurn == false && m_bAI == false)
+            else if(m_eGameState == GAMESTATE_INPROGRESS && m_bPlayerTurn == false && m_bAI == false)
 			{
                 SDL_QueryTexture(m_pMessagePlayerTwoTurn, NULL, NULL, &m_MessageLocation.w, &m_MessageLocation.h);
                 m_MessageLocation.x = (m_WindowWidth - m_MessageLocation.w) / 2;
                 m_MessageLocation.y = 25;
                 SDL_RenderCopy(m_pRenderer, m_pMessagePlayerTwoTurn, NULL, &m_MessageLocation);
 			}
-            else if(m_GameState == GAMESTATE_PLAYERWON)
+            else if(m_eGameState == GAMESTATE_PLAYERWON)
 			{
                 SDL_QueryTexture(m_pMessagePlayerOneWon, NULL, NULL, &m_MessageLocation.w, &m_MessageLocation.h);
                 m_MessageLocation.x = (m_WindowWidth - m_MessageLocation.w) / 2;
@@ -285,7 +303,7 @@ int CGame::Run()
                 m_MessageLocation.y = m_MessageLocation.y + m_MessageLocation.h;
                 SDL_RenderCopy(m_pRenderer, m_pMessageStartup, NULL, &m_MessageLocation);
 			}
-            else if(m_GameState == GAMESTATE_AIWON && m_bAI == false)
+            else if(m_eGameState == GAMESTATE_AIWON && m_bAI == false)
 			{
                 SDL_QueryTexture(m_pMessagePlayerTwoWon, NULL, NULL, &m_MessageLocation.w, &m_MessageLocation.h);
                 m_MessageLocation.x = (m_WindowWidth - m_MessageLocation.w) / 2;
@@ -297,7 +315,7 @@ int CGame::Run()
                 m_MessageLocation.y = m_MessageLocation.y + m_MessageLocation.h;
                 SDL_RenderCopy(m_pRenderer, m_pMessageStartup, NULL, &m_MessageLocation);
 			}
-            else if(m_GameState == GAMESTATE_AIWON && m_bAI == true)
+            else if(m_eGameState == GAMESTATE_AIWON && m_bAI == true)
 			{
                 SDL_QueryTexture(m_pMessageAIWon, NULL, NULL, &m_MessageLocation.w, &m_MessageLocation.h);
                 m_MessageLocation.x = (m_WindowWidth - m_MessageLocation.w) / 2;
@@ -309,6 +327,18 @@ int CGame::Run()
                 m_MessageLocation.y = m_MessageLocation.y + m_MessageLocation.h;
                 SDL_RenderCopy(m_pRenderer, m_pMessageStartup, NULL, &m_MessageLocation);
 			}
+            else if(m_eGameState == GAMESTATE_GAMEOVER)
+            {
+                SDL_QueryTexture(m_pMessageGameOver, NULL, NULL, &m_MessageLocation.w, &m_MessageLocation.h);
+                m_MessageLocation.x = (m_WindowWidth - m_MessageLocation.w) / 2;
+                m_MessageLocation.y = 25;
+                SDL_RenderCopy(m_pRenderer, m_pMessageGameOver, NULL, &m_MessageLocation);
+
+                SDL_QueryTexture(m_pMessageStartup, NULL, NULL, &m_MessageLocation.w, &m_MessageLocation.h);
+                m_MessageLocation.x = (m_WindowWidth - m_MessageLocation.w) / 2;
+                m_MessageLocation.y = m_MessageLocation.y + m_MessageLocation.h;
+                SDL_RenderCopy(m_pRenderer, m_pMessageStartup, NULL, &m_MessageLocation);
+            }
 
             SDL_RenderPresent(m_pRenderer);
 

@@ -42,6 +42,7 @@ public:
 
     int  Update(bool player, int x, int y);
     eGameStates GameWon(bool player);
+    eGameStates GameOver();
     void SimulateAI();
 
     SDL_Texture* GetBackground();

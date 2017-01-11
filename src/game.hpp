@@ -33,6 +33,7 @@ private:
     SDL_Texture*  m_pMessagePlayerOneWon;
     SDL_Texture*  m_pMessagePlayerTwoWon;
     SDL_Texture*  m_pMessageAIWon;
+    SDL_Texture*  m_pMessageGameOver;
     SDL_Color     m_TextColour;
     SDL_Rect      m_MessageLocation;
 
@@ -42,7 +43,7 @@ private:
 
     int           m_WindowWidth;
     int           m_WindowHeight;
-    eGameStates   m_GameState;
+    eGameStates   m_eGameState;
 
     unsigned int  m_StartTime;
     unsigned int  m_CurrentTime;

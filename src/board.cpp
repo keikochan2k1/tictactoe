@@ -588,7 +588,7 @@ bool CBoard::AIBlock()
 //=============================================================================
 // Name: GameWon
 // Desc: Checks if the player or AI has three marks in a row. Returns the
-//       respective game state if one is found, else -1.
+//       respective game state if one is found, else GAMESTATE_INPROGRESS.
 //=============================================================================
 eGameStates CBoard::GameWon(bool player)
 {
@@ -636,6 +636,20 @@ eGameStates CBoard::GameWon(bool player)
         else if(marks[2].texture == m_pPlayer2 && marks[4].texture == m_pPlayer2 && marks[6].texture == m_pPlayer2)
 			return GAMESTATE_AIWON;
 	}
+
+    return GAMESTATE_INPROGRESS;
+}
+
+//=============================================================================
+// Name: GameOver
+// Desc: Checks if the board is full, which ends the game.
+//=============================================================================
+eGameStates CBoard::GameOver()
+{
+    if(marks[0].texture != NULL && marks[1].texture != NULL && marks[2].texture != NULL
+            && marks[3].texture != NULL && marks[4].texture != NULL && marks[5].texture != NULL
+            && marks[6].texture != NULL && marks[7].texture != NULL && marks[8].texture != NULL)
+        return GAMESTATE_GAMEOVER;
 
     return GAMESTATE_INPROGRESS;
 }

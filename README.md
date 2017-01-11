@@ -7,7 +7,7 @@ Tasks that I've decided to do now, before letting it rest:
 - [x] Remove the broken attempt at adding OpenGL, and replace it with SDL2 (DONE)
 - [x] Fix the broken AI (DONE)
 - [x] Check for potential memory leaks (DONE)
-- [ ] Add a statement that checks if the board is full (IN PROGRESS)
+- [x] Add a statement that checks if the board is full (DONE)
 - [ ] Add some sensible error handling (IN PROGRESS)
 - [ ] Update README with how to compile and play.
 	
