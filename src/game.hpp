@@ -3,6 +3,7 @@
  *
  *  Created on: 5 Jul 2013
  *      Author: Fredrick Lockert
+ *  Update on: 11 Jan 2017
  */
 
 #ifndef GAME_HPP_
@@ -10,40 +11,46 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include "gamestates.hpp"
 
 class CBoard;
 
 class CGame
 {
 public:
-	CGame();
-	~CGame();
+    CGame();
+    ~CGame();
 
-	int Initialise();
-	int Run();
+    int Initialise();
+    int Run();
 
 private:
-	SDL_Window*   m_pWindow;
-        SDL_Renderer* m_pRenderer;
-        int           m_WindowWidth;
-        int           m_WindowHeight;
-	CBoard*       m_pBoard;
-	Uint32        m_StartTime;
-	Uint32        m_CurrentTime;
-	Uint32        m_LastTime;
-	bool          m_bQuit;
-	bool          m_bPlayerTurn;
-	bool          m_bAI;
-	int           m_GameState;
-        TTF_Font*     m_pFont;
-	SDL_Color     mTextColour;
-	SDL_Texture*  mMessageStartup;
-	SDL_Texture*  mMessagePlayerOneTurn;
-	SDL_Texture*  mMessagePlayerTwoTurn;
-	SDL_Texture*  mMessagePlayerOneWon;
-	SDL_Texture*  mMessagePlayerTwoWon;
-	SDL_Texture*  mMessageAIWon;
-	SDL_Rect      mMessageLocation;
+    SDL_Window*   m_pWindow;
+    SDL_Renderer* m_pRenderer;
+    SDL_Texture*  m_pMessageStartup;
+    SDL_Texture*  m_pMessagePlayerOneTurn;
+    SDL_Texture*  m_pMessagePlayerTwoTurn;
+    SDL_Texture*  m_pMessagePlayerOneWon;
+    SDL_Texture*  m_pMessagePlayerTwoWon;
+    SDL_Texture*  m_pMessageAIWon;
+    SDL_Color     m_TextColour;
+    SDL_Rect      m_MessageLocation;
+
+    TTF_Font*     m_pFont;
+
+    CBoard*       m_pBoard;
+
+    int           m_WindowWidth;
+    int           m_WindowHeight;
+    eGameStates   m_GameState;
+
+    unsigned int  m_StartTime;
+    unsigned int  m_CurrentTime;
+    unsigned int  m_LastTime;
+
+    bool          m_bQuit;
+    bool          m_bPlayerTurn;
+    bool          m_bAI;
 };
 
 #endif /* GAME_HPP_ */

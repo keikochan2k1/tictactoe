@@ -3,6 +3,7 @@
  *
  *  Created on: 6 Jul 2013
  *      Author: Fredrick Lockert
+ *  Updated on: 11 Jan 2017
  */
 
 #ifndef BOARD_HPP_
@@ -12,61 +13,57 @@
 #include <string>
 
 #include <SDL2/SDL_render.h>
-
-enum GameStates
-{
-	GAMESTATE_STARTUP = 0,
-	GAMESTATE_INPROGRESS,
-	GAMESTATE_PLAYERWON,
-	GAMESTATE_AIWON,
-	GAMESTATE_GAMEOVER
-};
+#include "gamestates.hpp"
 
 struct Marks
 {
-	std::string name;
-	SDL_Rect location;
-	SDL_Texture* texture;
+    std::string name;
+    SDL_Rect location;
+    SDL_Texture* texture;
 };
 
 struct Size
 {
-	int x;
-	int y;
+    int x;
+    int y;
 };
 
 class CBoard
 {
 public:
-	CBoard();
-	~CBoard();
+    CBoard();
+    ~CBoard();
 
-	void NewBoard();
-        int SetBackground(SDL_Renderer* renderer, std::string path);
-	SDL_Texture* GetBackground();
-	SDL_Rect* GetSize();
-        int SetPlayer1(SDL_Renderer* renderer, std::string path);
-        int SetPlayer2(SDL_Renderer* renderer, std::string path);
-	int  Update(bool player, int x, int y);
-	void SimulateAI();
-	int  GameWon(bool player);
+    void NewBoard();
+
+    int SetBackground(SDL_Renderer* renderer, std::string path);
+    int SetPlayer1(SDL_Renderer* renderer, std::string path);
+    int SetPlayer2(SDL_Renderer* renderer, std::string path);
+
+    int  Update(bool player, int x, int y);
+    eGameStates GameWon(bool player);
+    void SimulateAI();
+
+    SDL_Texture* GetBackground();
+    SDL_Rect* GetSize();
 
 public:
-	Size boardOffset;
-	Size markSize;
+    Size boardOffset;
+    Size markSize;
 
-	std::vector<Marks> marks;
-
-private:
-        bool AIPotentialWin();
-	bool AIBlock();
-	bool AIRandom();
+    std::vector<Marks> marks;
 
 private:
-        SDL_Texture* m_pBackground;
-        SDL_Rect     m_BackgroundSize;
-        SDL_Texture* m_pPlayer1;
-        SDL_Texture* m_pPlayer2;
+    bool AIPotentialWin();
+    bool AIBlock();
+    bool AIRandom();
+
+private:
+    SDL_Texture* m_pBackground;
+    SDL_Texture* m_pPlayer1;
+    SDL_Texture* m_pPlayer2;
+
+    SDL_Rect     m_BackgroundSize;
 };
 
 

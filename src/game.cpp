@@ -1,9 +1,9 @@
 /*
  * game.cpp
  *
- *  Created on: 2013.07.05
+ *  Created on: 05 Jul 2013
  *      Author: Fredrick Lockert
- *  Updated on: 10 Jan 2017
+ *  Updated on: 11 Jan 2017
  */
 
 #include "game.hpp"
@@ -19,6 +19,13 @@ CGame::CGame()
     m_pRenderer     = NULL;
 	m_pBoard        = NULL;
     m_pFont         = NULL;
+    m_pMessageStartup       = NULL;
+    m_pMessagePlayerOneTurn = NULL;
+    m_pMessagePlayerTwoTurn = NULL;
+    m_pMessagePlayerOneWon  = NULL;
+    m_pMessagePlayerTwoWon  = NULL;
+    m_pMessageAIWon         = NULL;
+
 	m_WindowWidth   = 325;
 	m_WindowHeight  = 400;
 	m_StartTime     = 0;
@@ -28,6 +35,9 @@ CGame::CGame()
 	m_bPlayerTurn   = true;
 	m_bAI           = false;
 	m_GameState     = GAMESTATE_STARTUP;
+
+    m_TextColour = {0, 0, 0, 0};
+    m_MessageLocation = {15, 25, 0, 0};
 }
 
 //=============================================================================
@@ -36,23 +46,23 @@ CGame::CGame()
 //=============================================================================
 CGame::~CGame()
 {
-	if(mMessageStartup != NULL)
-		SDL_DestroyTexture(mMessageStartup);
+    if(m_pMessageStartup != NULL)
+        SDL_DestroyTexture(m_pMessageStartup);
 
-	if(mMessagePlayerOneTurn != NULL)
-		SDL_DestroyTexture(mMessagePlayerOneTurn);
+    if(m_pMessagePlayerOneTurn != NULL)
+        SDL_DestroyTexture(m_pMessagePlayerOneTurn);
 
-	if(mMessagePlayerTwoTurn != NULL)
-		SDL_DestroyTexture(mMessagePlayerTwoTurn);
+    if(m_pMessagePlayerTwoTurn != NULL)
+        SDL_DestroyTexture(m_pMessagePlayerTwoTurn);
 
-	if(mMessagePlayerOneWon != NULL)
-		SDL_DestroyTexture(mMessagePlayerOneWon);
+    if(m_pMessagePlayerOneWon != NULL)
+        SDL_DestroyTexture(m_pMessagePlayerOneWon);
 
-	if(mMessagePlayerTwoWon != NULL)
-		SDL_DestroyTexture(mMessagePlayerTwoWon);
+    if(m_pMessagePlayerTwoWon != NULL)
+        SDL_DestroyTexture(m_pMessagePlayerTwoWon);
 
-	if(mMessageAIWon != NULL)
-		SDL_DestroyTexture(mMessageAIWon);
+    if(m_pMessageAIWon != NULL)
+        SDL_DestroyTexture(m_pMessageAIWon);
 
     if(m_pFont != NULL)
         TTF_CloseFont(m_pFont);
@@ -120,31 +130,28 @@ int CGame::Initialise()
         return -1;
     }
 
-    mTextColour = {0, 0, 0};
-	mMessageLocation = {15, 25, 0, 0};
-
 	// Load assets into memory.
     m_pBoard->SetBackground(m_pRenderer, "../data/assets/background.bmp");
     m_pBoard->SetPlayer1(m_pRenderer, "../data/assets/x.bmp");
     m_pBoard->SetPlayer2(m_pRenderer, "../data/assets/o.bmp");
 
-    SDL_Surface* temp = TTF_RenderText_Blended(m_pFont, "Press Ctrl+N to start a new game.", mTextColour);
-    mMessageStartup = SDL_CreateTextureFromSurface(m_pRenderer, temp);
+    SDL_Surface* temp = TTF_RenderText_Blended(m_pFont, "Press Ctrl+N to start a new game.", m_TextColour);
+    m_pMessageStartup = SDL_CreateTextureFromSurface(m_pRenderer, temp);
 
-    temp = TTF_RenderText_Blended(m_pFont, "Turn: Player One", mTextColour);
-    mMessagePlayerOneTurn = SDL_CreateTextureFromSurface(m_pRenderer, temp);
+    temp = TTF_RenderText_Blended(m_pFont, "Turn: Player One", m_TextColour);
+    m_pMessagePlayerOneTurn = SDL_CreateTextureFromSurface(m_pRenderer, temp);
 
-    temp = TTF_RenderText_Blended(m_pFont, "Turn: Player Two", mTextColour);
-    mMessagePlayerTwoTurn = SDL_CreateTextureFromSurface(m_pRenderer, temp);
+    temp = TTF_RenderText_Blended(m_pFont, "Turn: Player Two", m_TextColour);
+    m_pMessagePlayerTwoTurn = SDL_CreateTextureFromSurface(m_pRenderer, temp);
 
-    temp = TTF_RenderText_Blended(m_pFont, "Player One Won The Game!", mTextColour);
-    mMessagePlayerOneWon = SDL_CreateTextureFromSurface(m_pRenderer, temp);
+    temp = TTF_RenderText_Blended(m_pFont, "Player One Won The Game!", m_TextColour);
+    m_pMessagePlayerOneWon = SDL_CreateTextureFromSurface(m_pRenderer, temp);
 
-    temp = TTF_RenderText_Blended(m_pFont, "Player Two Won The Game!", mTextColour);
-    mMessagePlayerTwoWon = SDL_CreateTextureFromSurface(m_pRenderer, temp);
+    temp = TTF_RenderText_Blended(m_pFont, "Player Two Won The Game!", m_TextColour);
+    m_pMessagePlayerTwoWon = SDL_CreateTextureFromSurface(m_pRenderer, temp);
 
-    temp = TTF_RenderText_Blended(m_pFont, "AI Won The Game!", mTextColour);
-    mMessageAIWon = SDL_CreateTextureFromSurface(m_pRenderer, temp);
+    temp = TTF_RenderText_Blended(m_pFont, "AI Won The Game!", m_TextColour);
+    m_pMessageAIWon = SDL_CreateTextureFromSurface(m_pRenderer, temp);
 
 	SDL_FreeSurface(temp);
 
@@ -247,60 +254,60 @@ int CGame::Run()
 
             if(m_GameState == GAMESTATE_STARTUP)
 			{
-				SDL_QueryTexture(mMessageStartup, NULL, NULL, &mMessageLocation.w, &mMessageLocation.h);
-                mMessageLocation.x = (m_WindowWidth - mMessageLocation.w) / 2;
-				mMessageLocation.y = 25;
-                SDL_RenderCopy(m_pRenderer, mMessageStartup, NULL, &mMessageLocation);
+                SDL_QueryTexture(m_pMessageStartup, NULL, NULL, &m_MessageLocation.w, &m_MessageLocation.h);
+                m_MessageLocation.x = (m_WindowWidth - m_MessageLocation.w) / 2;
+                m_MessageLocation.y = 25;
+                SDL_RenderCopy(m_pRenderer, m_pMessageStartup, NULL, &m_MessageLocation);
 			}
             else if(m_GameState == GAMESTATE_INPROGRESS && m_bPlayerTurn == true)
 			{
-				SDL_QueryTexture(mMessagePlayerOneTurn, NULL, NULL, &mMessageLocation.w, &mMessageLocation.h);
-                mMessageLocation.x = (m_WindowWidth - mMessageLocation.w) / 2;
-				mMessageLocation.y = 25;
-                SDL_RenderCopy(m_pRenderer, mMessagePlayerOneTurn, NULL, &mMessageLocation);
+                SDL_QueryTexture(m_pMessagePlayerOneTurn, NULL, NULL, &m_MessageLocation.w, &m_MessageLocation.h);
+                m_MessageLocation.x = (m_WindowWidth - m_MessageLocation.w) / 2;
+                m_MessageLocation.y = 25;
+                SDL_RenderCopy(m_pRenderer, m_pMessagePlayerOneTurn, NULL, &m_MessageLocation);
 			}
             else if(m_GameState == GAMESTATE_INPROGRESS && m_bPlayerTurn == false && m_bAI == false)
 			{
-				SDL_QueryTexture(mMessagePlayerTwoTurn, NULL, NULL, &mMessageLocation.w, &mMessageLocation.h);
-                mMessageLocation.x = (m_WindowWidth - mMessageLocation.w) / 2;
-				mMessageLocation.y = 25;
-                SDL_RenderCopy(m_pRenderer, mMessagePlayerTwoTurn, NULL, &mMessageLocation);
+                SDL_QueryTexture(m_pMessagePlayerTwoTurn, NULL, NULL, &m_MessageLocation.w, &m_MessageLocation.h);
+                m_MessageLocation.x = (m_WindowWidth - m_MessageLocation.w) / 2;
+                m_MessageLocation.y = 25;
+                SDL_RenderCopy(m_pRenderer, m_pMessagePlayerTwoTurn, NULL, &m_MessageLocation);
 			}
             else if(m_GameState == GAMESTATE_PLAYERWON)
 			{
-				SDL_QueryTexture(mMessagePlayerOneWon, NULL, NULL, &mMessageLocation.w, &mMessageLocation.h);
-                mMessageLocation.x = (m_WindowWidth - mMessageLocation.w) / 2;
-				mMessageLocation.y = 25;
-                SDL_RenderCopy(m_pRenderer, mMessagePlayerOneWon, NULL, &mMessageLocation);
+                SDL_QueryTexture(m_pMessagePlayerOneWon, NULL, NULL, &m_MessageLocation.w, &m_MessageLocation.h);
+                m_MessageLocation.x = (m_WindowWidth - m_MessageLocation.w) / 2;
+                m_MessageLocation.y = 25;
+                SDL_RenderCopy(m_pRenderer, m_pMessagePlayerOneWon, NULL, &m_MessageLocation);
 
-				SDL_QueryTexture(mMessageStartup, NULL, NULL, &mMessageLocation.w, &mMessageLocation.h);
-                mMessageLocation.x = (m_WindowWidth - mMessageLocation.w) / 2;
-				mMessageLocation.y = mMessageLocation.y + mMessageLocation.h;
-                SDL_RenderCopy(m_pRenderer, mMessageStartup, NULL, &mMessageLocation);
+                SDL_QueryTexture(m_pMessageStartup, NULL, NULL, &m_MessageLocation.w, &m_MessageLocation.h);
+                m_MessageLocation.x = (m_WindowWidth - m_MessageLocation.w) / 2;
+                m_MessageLocation.y = m_MessageLocation.y + m_MessageLocation.h;
+                SDL_RenderCopy(m_pRenderer, m_pMessageStartup, NULL, &m_MessageLocation);
 			}
             else if(m_GameState == GAMESTATE_AIWON && m_bAI == false)
 			{
-				SDL_QueryTexture(mMessagePlayerTwoWon, NULL, NULL, &mMessageLocation.w, &mMessageLocation.h);
-                mMessageLocation.x = (m_WindowWidth - mMessageLocation.w) / 2;
-				mMessageLocation.y = 25;
-                SDL_RenderCopy(m_pRenderer, mMessagePlayerTwoWon, NULL, &mMessageLocation);
+                SDL_QueryTexture(m_pMessagePlayerTwoWon, NULL, NULL, &m_MessageLocation.w, &m_MessageLocation.h);
+                m_MessageLocation.x = (m_WindowWidth - m_MessageLocation.w) / 2;
+                m_MessageLocation.y = 25;
+                SDL_RenderCopy(m_pRenderer, m_pMessagePlayerTwoWon, NULL, &m_MessageLocation);
 
-				SDL_QueryTexture(mMessageStartup, NULL, NULL, &mMessageLocation.w, &mMessageLocation.h);
-                mMessageLocation.x = (m_WindowWidth - mMessageLocation.w) / 2;
-				mMessageLocation.y = mMessageLocation.y + mMessageLocation.h;
-                SDL_RenderCopy(m_pRenderer, mMessageStartup, NULL, &mMessageLocation);
+                SDL_QueryTexture(m_pMessageStartup, NULL, NULL, &m_MessageLocation.w, &m_MessageLocation.h);
+                m_MessageLocation.x = (m_WindowWidth - m_MessageLocation.w) / 2;
+                m_MessageLocation.y = m_MessageLocation.y + m_MessageLocation.h;
+                SDL_RenderCopy(m_pRenderer, m_pMessageStartup, NULL, &m_MessageLocation);
 			}
             else if(m_GameState == GAMESTATE_AIWON && m_bAI == true)
 			{
-				SDL_QueryTexture(mMessageAIWon, NULL, NULL, &mMessageLocation.w, &mMessageLocation.h);
-                mMessageLocation.x = (m_WindowWidth - mMessageLocation.w) / 2;
-				mMessageLocation.y = 25;
-                SDL_RenderCopy(m_pRenderer, mMessageAIWon, NULL, &mMessageLocation);
+                SDL_QueryTexture(m_pMessageAIWon, NULL, NULL, &m_MessageLocation.w, &m_MessageLocation.h);
+                m_MessageLocation.x = (m_WindowWidth - m_MessageLocation.w) / 2;
+                m_MessageLocation.y = 25;
+                SDL_RenderCopy(m_pRenderer, m_pMessageAIWon, NULL, &m_MessageLocation);
 
-				SDL_QueryTexture(mMessageStartup, NULL, NULL, &mMessageLocation.w, &mMessageLocation.h);
-                mMessageLocation.x = (m_WindowWidth - mMessageLocation.w) / 2;
-				mMessageLocation.y = mMessageLocation.y + mMessageLocation.h;
-                SDL_RenderCopy(m_pRenderer, mMessageStartup, NULL, &mMessageLocation);
+                SDL_QueryTexture(m_pMessageStartup, NULL, NULL, &m_MessageLocation.w, &m_MessageLocation.h);
+                m_MessageLocation.x = (m_WindowWidth - m_MessageLocation.w) / 2;
+                m_MessageLocation.y = m_MessageLocation.y + m_MessageLocation.h;
+                SDL_RenderCopy(m_pRenderer, m_pMessageStartup, NULL, &m_MessageLocation);
 			}
 
             SDL_RenderPresent(m_pRenderer);

@@ -1,9 +1,9 @@
 /*
  * board.cpp
  *
- *  Created on: 6 Jul 2013
+ *  Created on: 06 Jul 2013
  *      Author: Fredrick Lockert
- *  Updated on: 10 Jan 2017
+ *  Updated on: 11 Jan 2017
  */
 
 #include "board.hpp"
@@ -195,7 +195,7 @@ int CBoard::SetPlayer1(SDL_Renderer* renderer, std::string path)
     m_pPlayer1 = SDL_CreateTextureFromSurface(renderer, temp);
 	SDL_FreeSurface(temp);
 
-    return 0;
+    return 1;
 }
 
 //=============================================================================
@@ -229,6 +229,10 @@ SDL_Texture* CBoard::GetBackground()
     return m_pBackground;
 }
 
+//=============================================================================
+// Name: GetSize()
+// Desc: Returns a pointer to the board background rect.
+//=============================================================================
 SDL_Rect* CBoard::GetSize()
 {
     return &m_BackgroundSize;
@@ -276,6 +280,10 @@ void CBoard::SimulateAI()
 	AIRandom();
 }
 
+//=============================================================================
+// Name: AIPotentialWin
+// Desc: Checks if the AI can win with its next move.
+//=============================================================================
 bool CBoard::AIPotentialWin()
 {
     // Vertical lines
@@ -425,7 +433,7 @@ bool CBoard::AIRandom()
 
 	while(1)
 	{
-		int move = rand() % 9;
+        unsigned int move = rand() % 9;
 
 		if(marks[move].texture == NULL)
 		{
@@ -582,7 +590,7 @@ bool CBoard::AIBlock()
 // Desc: Checks if the player or AI has three marks in a row. Returns the
 //       respective game state if one is found, else -1.
 //=============================================================================
-int CBoard::GameWon(bool player)
+eGameStates CBoard::GameWon(bool player)
 {
 	if(player)
 	{
@@ -629,5 +637,5 @@ int CBoard::GameWon(bool player)
 			return GAMESTATE_AIWON;
 	}
 
-	return -1;
+    return GAMESTATE_INPROGRESS;
 }
