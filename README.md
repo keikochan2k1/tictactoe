@@ -4,10 +4,10 @@ Originally a first time C++ game project, finished back in 2013 (With a broken A
 
 ## To compile and run you need these packages:
 
-	- CMake 2.8+
-	- Clang 3.3+ OR GCC 4.8.1+
-	- SDL2 2.0+
-	- SDL2-ttf 2.0+
+- CMake 2.8+
+- Clang 3.3+ OR GCC 4.8.1+
+- SDL2 2.0+
+- SDL2-ttf 2.0+
 	
 ## Compiling:
 ```
@@ -26,6 +26,6 @@ cd bin
 ```
 
 ## Controls
-CTRL + N: New Game
-CTRL + A: Activate AI / Deactivate AI
-CTRL + Q: Quit
+CTRL + N: New Game  
+CTRL + A: Activate AI / Deactivate AI  
+CTRL + Q: Quit  
